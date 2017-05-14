@@ -2,7 +2,7 @@ class ModP(int):
     'Integers mod p, p a prime power.'
     def __new__(cls, p, num):
         self.p = p
-        return int.__new__(cls, num % p)
+        return int.__new__(cls, int(num) % p)
     
     # arithmetic
     def __add__(self, other):

@@ -31,8 +31,6 @@ class PAdic:
         return int(self.get(32), p)
     def __str__(self):
         return self.get(32)
-    def __repr__(self):
-        pass
     
     # arithmetic operations
     def __add__(self, other):

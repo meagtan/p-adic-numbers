@@ -24,4 +24,17 @@ class ModP(int):
     
     def _inv(self):
         'Find multiplicative inverse of self in Z mod p.'
-        pass
+        # extended Euclidean algorithm
+        rcurr = self.p
+        rnext = int(self)
+        tcurr = 0
+        tnext = 1
+        
+        while rnext:
+            q = rcurr // rnext
+            rcurr, rnext = rnext, rcurr - q * rnext
+            tcurr, tnext = tnext, tcurr - q * tnext
+        
+        if rcurr != 1:
+            raise ValueError("%d not a unit modulo %d" % (self, self.p))
+        return ModP(self.p, tcurr)

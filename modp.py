@@ -1,5 +1,5 @@
 class ModP(int):
-    'Integers mod p.'
+    'Integers mod p, p a prime power.'
     def __new__(cls, p, num):
         self.p = p
         return int.__new__(cls, num % p)

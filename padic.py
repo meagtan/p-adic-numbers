@@ -6,15 +6,12 @@ class PAdic:
     def __init__(self, p):
         self.p = p
         self.val  = '' # current known value
-        self.prec = 0 # current known precision
+        self.prec = 0 # current known precision, also containing leading zeros
         self.order = 0 # order/valuation of number
         pass # initialize object as subclass perhaps
     
     def get(self, prec):
         'Return value of number with given precision.'
-        if self.value == 0:
-            return '0' # * prec
-        
         while self.prec < prec:
             # update val based on value
             self.val = self._nextdigit() + self.val
@@ -71,19 +68,23 @@ class PAdicConst(PAdic):
         if value == 0:
             self.value = value
             self.val = '0'
+            self.order = maxint
             return
         
-        self.norm = Fraction(1)
         self.order = 0
         while not value.numerator % self.p:
-            self.norm /= self.p
             self.order += 1
+            self.prec += 1
             value.numerator /= self.p
         while not value.denominator % self.p:
-            self.norm *= self.p
             valuation -= 1
             value.denominator /= self.p
         self.value = value
+    
+    def get(self, prec):
+        if self.value == 0:
+            return '0' # * prec
+        return PAdic.get(self, prec)
     
     def _nextdigit(self):
         'Calculate next digit of p-adic number.'
@@ -99,6 +100,13 @@ class PAdicAdd(PAdic):
         self.carry = 0
         self.arg1 = arg1
         self.arg2 = arg2
+        self.order = min(arg1.order, arg2.order) # might be larger than this
+        # loop until first nonzero digit is found
+        digit = self._nextdigit()
+        while digit == 0:
+            self.order += 1
+            self.prec += 1
+            digit = self._nextdigit()
     
     def _nextdigit(self):
         s = self.arg1.getdigit(self.prec) + self.arg2.getdigit(self.prec) + self.carry
@@ -110,10 +118,11 @@ class PAdicNeg(PAdic):
     def __init__(self, p, arg):
         PAdic.__init__(self, p)
         self.arg = arg
+        self.order = arg.order
     
     def _nextdigit(self):
         if self.prec == 0:
-            return self.p - self.arg.getdigit(0)
+            return self.p - self.arg.getdigit(0) # cannot be p, 0th digit of arg must be nonzero
         return self.p - 1 - self.arg.getdigit(0)
 
 class PAdicMul(PAdic):

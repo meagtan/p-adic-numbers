@@ -1,8 +1,15 @@
 from fractions import Fraction
 from sys import maxint
+from modp import *
+
+def padic(prime):
+    'Return p-adic class with given prime.'
+    class Res(PAdic):
+        p = prime
+    return Res
 
 class PAdic:
-    p = 2
+    p = 2 # default
     def __init__(self):
         self.val  = '' # current known value
         self.prec = 0 # current known precision
@@ -11,6 +18,17 @@ class PAdic:
     
     def get(self, prec):
         'Return value of number with given precision.'
+        if self.value == 0:
+            return '0' # * prec
+        
+        while self.prec < prec:
+            # update val based on value
+            self._nextdigit()
+            self.prec += 1
+        return self.val # TODO add decimal point or trailing zeros
+    
+    def _nextdigit(self):
+        'Calculate next digit of p-adic number.'
         raise NotImplementedError
     
     # return value with precision up to 32 bits
@@ -69,13 +87,11 @@ class PAdicConst(PAdic):
             value.denominator /= p
         self.value = value
     
-    def get(self, prec):
-        'Return value of constant with given precision.'
-        if self.value == 0:
-            return self.val
-        
-        while self.prec < prec:
-            # update val based on value
-            
-            self.prec += 1
-        return self.val # TODO add decimal point or trailing zeros
+    def _nextdigit(self):
+        'Calculate next digit of p-adic number.'
+        rem = ModP(p, self.value.numerator) / ModP(p, self.value.denominator)
+        self.val = rem + self.val
+        self.value -= rem
+        self.value /= p
+
+     

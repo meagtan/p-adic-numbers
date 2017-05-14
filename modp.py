@@ -1,8 +1,14 @@
 class ModP(int):
     'Integers mod p, p a prime power.'
     def __new__(cls, p, num):
+        self = int.__new__(cls, int(num) % p)
         self.p = p
-        return int.__new__(cls, int(num) % p)
+        return self
+    
+    def __str__(self):
+        return "%d (mod %d)" % (self, self.p)
+    def __repr__(self):
+        return "%d %% %d" % (self, self.p)
     
     # arithmetic
     def __add__(self, other):
@@ -18,6 +24,8 @@ class ModP(int):
     def __rmul__(self, other):
         return ModP(self.p, int(other) * int(self))
     def __div__(self, other):
+        if not isinstance(other, ModP):
+            other = ModP(self.p, other)
         return self * other._inv()
     def __rdiv__(self, other):
         return other * self._inv()

@@ -5,8 +5,8 @@ from collections import defaultdict
 class Poly:
     'Polynomial class.'
     def __init__(self, coeffs = None):
-        self.coeffs = defaultdict(int, not coeffs and {} or isinstance(coeffs, int) and {0:coeffs} or coeffs)
-        self.deg = int(self.coeffs and max(self.coeffs.keys()))
+        self.coeffs = defaultdict(int, isinstance(coeffs, int) and {0:coeffs} or coeffs or {})
+        self.deg = int(len(self.coeffs) and max(self.coeffs.keys()))
     
     def __call__(self, val):
         'Evaluate polynomial for a given value.'
@@ -17,9 +17,13 @@ class Poly:
     
     def __str__(self):
         def term(coeff, expt):
-            return ' * '.join(([] if coeff == 1 else [str(coeff)]) + ([] if expt == 0 else ['X'] if expt == 1 else ['X^' + expt]))
+            if coeff == 1 and expt == 0:
+                return '1'
+            return ' * '.join(([] if coeff == 1 else [str(coeff)]) + ([] if expt == 0 else ['X'] if expt == 1 else ['X ** ' + expt]))
             
         return ' + '.join(term(self.coeffs[i], i) for i in self.coeffs if self.coeffs[i] != 0)
+    def __repr__(self):
+        return str(self)
     
     # arithmetic
     def __add__(self, other):
@@ -56,6 +60,15 @@ class Poly:
         if not isinstance(other, Poly):
             other = Poly(other)
         return other.__mul__(self)
+        
+    def __pow__(self, other):
+        if not isinstance(other, int) or other < 0:
+            raise ValueError("Exponent %d is not a natural number" % other)
+        res = Poly(1)
+        while other:
+            res *= self
+            other -= 1
+        return res
 
 X = Poly({1:1})
 

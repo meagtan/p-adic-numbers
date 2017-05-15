@@ -3,6 +3,14 @@
 from padic import *
 from poly import *
 
+def roots(p, poly):
+    'Yield all roots of polynomial in the given p-adic integers.'
+    for root in xrange(p):
+        try:
+            yield PAdicPoly(p, poly, root)
+        except ValueError:
+            pass
+
 class PAdicPoly(PAdic):
     'Result of lifting a root of a polynomial in the integers mod p to the p-adic integers.'
     def __init__(self, p, poly, root):

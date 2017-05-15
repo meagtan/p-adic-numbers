@@ -19,7 +19,8 @@ class Poly:
         def term(coeff, expt):
             if coeff == 1 and expt == 0:
                 return '1'
-            return ' * '.join(([] if coeff == 1 else [str(coeff)]) + ([] if expt == 0 else ['X'] if expt == 1 else ['X ** ' + expt]))
+            return ' * '.join(([] if coeff == 1 else [str(coeff)]) + \
+                              ([] if expt == 0 else ['X'] if expt == 1 else ['X ** %d' % expt]))
             
         return ' + '.join(term(self.coeffs[i], i) for i in self.coeffs if self.coeffs[i] != 0)
     def __repr__(self):

@@ -11,6 +11,8 @@ class ModP(int):
         return "%d %% %d" % (self, self.p)
     
     # arithmetic
+    def __neg__(self):
+        return ModP(self.p, self.p - int(self))
     def __add__(self, other):
         return ModP(self.p, int(self) + int(other))
     def __radd__(self, other):

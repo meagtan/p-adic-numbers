@@ -19,11 +19,16 @@ class PAdicPoly(PAdic):
         
         # take care of trailing zeros
         digit = self.root
+        self.val = str(digit)
+        self.exp = self.p
         while digit == 0:
-            digit = self._nextdigit()
             self.order += 1
-            self.prec += 1
+            digit = self._nextdigit()
+            # self.prec += 1
 
     def _nextdigit(self):
-        self.root = ModP(self.p ** (self.order + 2), self.root)
+        self.root = ModP(self.exp * self.p, self.root)
         self.root = self.root - self.poly(self.root) / self.deriv(self.root) # coercions automatically taken care of
+        digit = self.root // self.exp
+        self.exp *= self.p
+        return digit

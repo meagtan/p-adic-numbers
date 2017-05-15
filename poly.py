@@ -26,6 +26,8 @@ class Poly:
         return str(self)
     
     # arithmetic
+    def __neg__(self):
+        return Poly({(i, -self.coeffs[i]) for i in self.coeffs})
     def __add__(self, other):
         if not isinstance(other, Poly):
             other = Poly(other)
@@ -41,11 +43,11 @@ class Poly:
     def __sub__(self, other):
         if not isinstance(other, Poly):
             other = Poly(other)
-        return self.__add__(other._neg())
+        return self.__add__(other.__neg__())
     def __rsub__(self, other):
         if not isinstance(other, Poly):
             other = Poly(other)
-        return other.__add__(self._neg())
+        return other.__add__(self.__neg__())
     
     def __mul__(self, other):
         if not isinstance(other, Poly):
